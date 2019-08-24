@@ -1,12 +1,12 @@
 [package]
-name = "tmp-ed25519-dalek"
+name = "tmp-ed25519"
 version = "1.0.0-pre.1"
 authors = ["isis lovecruft <isis@patternsinthevoid.net>, dirvine <david.irvine@maidsafe.net>"]
 readme = "README.md"
 license = "BSD-3-Clause"
 repository = "https://github.com/dirvine/ed25519-dalek"
 homepage = "https://dalek.rs"
-documentation = "https://docs.rs/ed25519-dalek"
+documentation = "https://docs.rs/tmp-ed25519"
 keywords = ["cryptography", "ed25519", "curve25519", "signature", "ECC"]
 categories = ["cryptography", "no-std"]
 description = "Temp crate do not use! This is a holding crate waiting on a PR to upstream being merged."
