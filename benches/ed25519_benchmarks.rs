@@ -22,7 +22,7 @@ mod ed25519_benches {
     use ed25519_dalek::Signature;
     use ed25519_dalek::verify_batch;
     use rand::thread_rng;
-    use rand::rngs::ThreadRng;
+    use rand::prelude::ThreadRng;
 
     fn sign(c: &mut Criterion) {
         let mut csprng: ThreadRng = thread_rng();
@@ -53,6 +53,17 @@ mod ed25519_benches {
         
         c.bench_function("Ed25519 signature verification", move |b| {
                          b.iter(| | keypair.verify(msg, &sig))
+        });
+    }
+
+    fn verify_strict(c: &mut Criterion) {
+        let mut csprng: ThreadRng = thread_rng();
+        let keypair: Keypair = Keypair::generate(&mut csprng);
+        let msg: &[u8] = b"";
+        let sig: Signature = keypair.sign(msg);
+
+        c.bench_function("Ed25519 strict signature verification", move |b| {
+                         b.iter(| | keypair.verify_strict(msg, &sig))
         });
     }
 
@@ -90,6 +101,7 @@ mod ed25519_benches {
             sign,
             sign_expanded_key,
             verify,
+            verify_strict,
             verify_batch_signatures,
             key_generation,
     }
