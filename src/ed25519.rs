@@ -89,7 +89,10 @@ impl Keypair {
         let secret = SecretKey::from_bytes(&bytes[..SECRET_KEY_LENGTH])?;
         let public = PublicKey::from_bytes(&bytes[SECRET_KEY_LENGTH..])?;
 
-        Ok(Keypair{ secret: secret, public: public })
+        Ok(Keypair {
+            secret: secret,
+            public: public,
+        })
     }
 
     /// Generate an ed25519 keypair.
@@ -98,14 +101,14 @@ impl Keypair {
     ///
     /// ```
     /// extern crate rand;
-    /// extern crate ed25519_dalek;
+    /// extern crate tmp_ed25519;
     ///
     /// # #[cfg(feature = "std")]
     /// # fn main() {
     ///
     /// use rand::rngs::OsRng;
-    /// use ed25519_dalek::Keypair;
-    /// use ed25519_dalek::Signature;
+    /// use tmp_ed25519::Keypair;
+    /// use tmp_ed25519::Signature;
     ///
     /// let mut csprng = OsRng{};
     /// let keypair: Keypair = Keypair::generate(&mut csprng);
@@ -132,7 +135,10 @@ impl Keypair {
         let sk: SecretKey = SecretKey::generate(csprng);
         let pk: PublicKey = (&sk).into();
 
-        Keypair{ public: pk, secret: sk }
+        Keypair {
+            public: pk,
+            secret: sk,
+        }
     }
 
     /// Sign a message with this keypair's secret key.
@@ -161,13 +167,13 @@ impl Keypair {
     /// # Examples
     ///
     /// ```
-    /// extern crate ed25519_dalek;
+    /// extern crate tmp_ed25519;
     /// extern crate rand;
     ///
-    /// use ed25519_dalek::Digest;
-    /// use ed25519_dalek::Keypair;
-    /// use ed25519_dalek::Sha512;
-    /// use ed25519_dalek::Signature;
+    /// use tmp_ed25519::Digest;
+    /// use tmp_ed25519::Keypair;
+    /// use tmp_ed25519::Sha512;
+    /// use tmp_ed25519::Signature;
     /// use rand::rngs::OsRng;
     ///
     /// # #[cfg(feature = "std")]
@@ -208,13 +214,13 @@ impl Keypair {
     /// your own!):
     ///
     /// ```
-    /// # extern crate ed25519_dalek;
+    /// # extern crate tmp_ed25519;
     /// # extern crate rand;
     /// #
-    /// # use ed25519_dalek::Digest;
-    /// # use ed25519_dalek::Keypair;
-    /// # use ed25519_dalek::Signature;
-    /// # use ed25519_dalek::Sha512;
+    /// # use tmp_ed25519::Digest;
+    /// # use tmp_ed25519::Keypair;
+    /// # use tmp_ed25519::Signature;
+    /// # use tmp_ed25519::Sha512;
     /// # use rand::rngs::OsRng;
     /// #
     /// # #[cfg(feature = "std")]
@@ -236,11 +242,7 @@ impl Keypair {
     ///
     /// [rfc8032]: https://tools.ietf.org/html/rfc8032#section-5.1
     /// [terrible_idea]: https://github.com/isislovecruft/scripts/blob/master/gpgkey2bc.py
-    pub fn sign_prehashed<D>(
-        &self,
-        prehashed_message: D,
-        context: Option<&[u8]>,
-    ) -> Signature
+    pub fn sign_prehashed<D>(&self, prehashed_message: D, context: Option<&[u8]>) -> Signature
     where
         D: Digest<OutputSize = U64>,
     {
@@ -250,12 +252,7 @@ impl Keypair {
     }
 
     /// Verify a signature on a message with this keypair's public key.
-    pub fn verify(
-        &self,
-        message: &[u8],
-        signature: &Signature
-    ) -> Result<(), SignatureError>
-    {
+    pub fn verify(&self, message: &[u8], signature: &Signature) -> Result<(), SignatureError> {
         self.public.verify(message, signature)
     }
 
@@ -279,13 +276,13 @@ impl Keypair {
     /// # Examples
     ///
     /// ```
-    /// extern crate ed25519_dalek;
+    /// extern crate tmp_ed25519;
     /// extern crate rand;
     ///
-    /// use ed25519_dalek::Digest;
-    /// use ed25519_dalek::Keypair;
-    /// use ed25519_dalek::Signature;
-    /// use ed25519_dalek::Sha512;
+    /// use tmp_ed25519::Digest;
+    /// use tmp_ed25519::Keypair;
+    /// use tmp_ed25519::Signature;
+    /// use tmp_ed25519::Sha512;
     /// use rand::rngs::OsRng;
     ///
     /// # #[cfg(feature = "std")]
@@ -324,7 +321,8 @@ impl Keypair {
     where
         D: Digest<OutputSize = U64>,
     {
-        self.public.verify_prehashed(prehashed_message, context, signature)
+        self.public
+            .verify_prehashed(prehashed_message, context, signature)
     }
 
     /// Strictly verify a signature on a message with this keypair's public key.
@@ -394,8 +392,7 @@ impl Keypair {
         &self,
         message: &[u8],
         signature: &Signature,
-    ) -> Result<(), SignatureError>
-    {
+    ) -> Result<(), SignatureError> {
         self.public.verify_strict(message, signature)
     }
 }
@@ -422,9 +419,11 @@ impl<'d> Deserialize<'d> for Keypair {
             type Value = Keypair;
 
             fn expecting(&self, formatter: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-                formatter.write_str("An ed25519 keypair, 64 bytes in total where the secret key is \
-                                     the first 32 bytes and is in unexpanded form, and the second \
-                                     32 bytes is a compressed point for a public key.")
+                formatter.write_str(
+                    "An ed25519 keypair, 64 bytes in total where the secret key is \
+                     the first 32 bytes and is in unexpanded form, and the second \
+                     32 bytes is a compressed point for a public key.",
+                )
             }
 
             fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Keypair, E>
@@ -435,7 +434,10 @@ impl<'d> Deserialize<'d> for Keypair {
                 let public_key = PublicKey::from_bytes(&bytes[SECRET_KEY_LENGTH..]);
 
                 if secret_key.is_ok() && public_key.is_ok() {
-                    Ok(Keypair{ secret: secret_key.unwrap(), public: public_key.unwrap() })
+                    Ok(Keypair {
+                        secret: secret_key.unwrap(),
+                        public: public_key.unwrap(),
+                    })
                 } else {
                     Err(SerdeError::invalid_length(bytes.len(), &self))
                 }

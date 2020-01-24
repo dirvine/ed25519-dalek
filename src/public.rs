@@ -122,11 +122,11 @@ impl PublicKey {
     /// # Example
     ///
     /// ```
-    /// # extern crate ed25519_dalek;
+    /// # extern crate tmp_ed25519;
     /// #
-    /// use ed25519_dalek::PublicKey;
-    /// use ed25519_dalek::PUBLIC_KEY_LENGTH;
-    /// use ed25519_dalek::SignatureError;
+    /// use tmp_ed25519::PublicKey;
+    /// use tmp_ed25519::PUBLIC_KEY_LENGTH;
+    /// use tmp_ed25519::SignatureError;
     ///
     /// # fn doctest() -> Result<PublicKey, SignatureError> {
     /// let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = [
@@ -188,12 +188,7 @@ impl PublicKey {
     ///
     /// Returns `Ok(())` if the signature is valid, and `Err` otherwise.
     #[allow(non_snake_case)]
-    pub fn verify(
-        &self,
-        message: &[u8],
-        signature: &Signature
-    ) -> Result<(), SignatureError>
-    {
+    pub fn verify(&self, message: &[u8], signature: &Signature) -> Result<(), SignatureError> {
         let mut h: Sha512 = Sha512::new();
         let R: EdwardsPoint;
         let k: Scalar;
@@ -246,7 +241,10 @@ impl PublicKey {
         let k: Scalar;
 
         let ctx: &[u8] = context.unwrap_or(b"");
-        debug_assert!(ctx.len() <= 255, "The context must not be longer than 255 octets.");
+        debug_assert!(
+            ctx.len() <= 255,
+            "The context must not be longer than 255 octets."
+        );
 
         let minus_A: EdwardsPoint = -self.1;
 
@@ -335,8 +333,7 @@ impl PublicKey {
         &self,
         message: &[u8],
         signature: &Signature,
-    ) -> Result<(), SignatureError>
-    {
+    ) -> Result<(), SignatureError> {
         let mut h: Sha512 = Sha512::new();
         let R: EdwardsPoint;
         let k: Scalar;
